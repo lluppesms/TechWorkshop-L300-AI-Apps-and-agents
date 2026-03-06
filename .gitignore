@@ -58,3 +58,5 @@ out/
 parameters.json
 .azure
 setup.txt
+My-Setup-Keys.txt
+*.url
