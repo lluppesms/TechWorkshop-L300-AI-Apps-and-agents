@@ -1,0 +1,66 @@
+# Workflow: Build and push Docker image to Azure Container Registry (ACR)
+# using Azure OIDC (Workload Identity Federation) authentication.
+#
+# Required GitHub secrets:
+#   ENV                   - Full contents of the .env file (copied into the Docker image by the Dockerfile)
+#   AZURE_CLIENT_ID       - Client (application) ID of the Azure AD app / managed identity
+#   AZURE_TENANT_ID       - Azure AD tenant ID
+#   AZURE_SUBSCRIPTION_ID - Azure subscription ID
+#   ACR_NAME              - Short ACR registry name, e.g. myregistry (without .azurecr.io)
+#   ACR_LOGIN_SERVER      - Full ACR login server, e.g. myregistry.azurecr.io
+#   ACR_REPOSITORY        - Image repository name, e.g. myapp
+
+name: Build and Push Docker image to ACR
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write   # Required for Azure OIDC authentication
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Log in to Azure using OIDC (no username/password needed)
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Authenticate Docker to ACR via Azure CLI (no registry credentials in secrets)
+      - name: Log in to Azure Container Registry
+        run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      # Write the .env file into the build context so the Dockerfile can COPY it.
+      # The secret value is redirected to a file; it is never echoed to the log.
+      - name: Create src/.env from secret
+        run: |
+          printf '%s' "$ENV_SECRET" > ./src/.env
+        env:
+          ENV_SECRET: ${{ secrets.ENV }}
+
+      # Build and push both the 'latest' tag and a commit-SHA tag
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./src
+          file: ./src/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:latest
+            ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:${{ github.sha }}
+
+      # Best-effort cleanup: remove the .env file from the runner workspace
+      - name: Remove src/.env
+        if: always()
+        run: rm -f ./src/.env
