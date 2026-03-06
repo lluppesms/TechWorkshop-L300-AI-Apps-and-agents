@@ -1,4 +1,4 @@
-name: Customer Loyalty Agent Initializer
+name: Deploy Customer Loyalty Agent
 
 on:
   push:
