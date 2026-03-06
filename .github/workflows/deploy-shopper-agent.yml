@@ -1,4 +1,5 @@
 name: Deploy Shopper Agent
+run-name: 'Deploy Shopper Agent by @${{ github.actor }}'
 
 on:
   push:

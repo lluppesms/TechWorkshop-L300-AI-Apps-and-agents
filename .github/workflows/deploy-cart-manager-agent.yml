@@ -1,4 +1,5 @@
 name: Deploy Cart Manager Agent
+run-name: 'Deploy Cart Manager Agent by @${{ github.actor }}'
 
 on:
   push:

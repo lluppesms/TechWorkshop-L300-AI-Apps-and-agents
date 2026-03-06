@@ -1,4 +1,5 @@
 name: Deploy Customer Loyalty Agent
+run-name: 'Deploy Customer Loyalty Agent by @${{ github.actor }}'
 
 on:
   push:

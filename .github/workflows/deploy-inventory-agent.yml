@@ -1,4 +1,5 @@
 name: Deploy Inventory Agent
+run-name: 'Deploy Inventory Agent by @${{ github.actor }}'
 
 on:
   push:
