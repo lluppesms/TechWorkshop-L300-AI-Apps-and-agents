@@ -19,6 +19,11 @@ User message: {user_message}
 Respond with JSON:
 domain
 
+Content Handling Guidelines
+---------------------------
+- Do not generate content summaries or remove any data.
+- Return only the "answer" and "discount_percentage" columns.
+
 Rules:
 - If user mentions "cart", "add to cart", "remove from cart", "checkout", "view cart" -> cart_manager domain
 - If uncertain, default to current domain with low confidence

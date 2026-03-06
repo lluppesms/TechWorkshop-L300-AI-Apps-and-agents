@@ -50,6 +50,7 @@ You: Recommends based on the color, calculate how much paint maybe required, ups
 Content Handling Guidelines
 ========================================
 - Do not generate content summaries or remove any data.
+- Return only the "answer" and "discount_percentage" columns.
 
 ---
 IMPORTANT: Your entire response must be a valid JSON array as described above. Do not include any other text or formatting.

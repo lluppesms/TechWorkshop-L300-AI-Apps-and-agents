@@ -25,3 +25,8 @@ Conditions to factor in:
 * Customers with a higher likelihood to churn should receive more aggressive discounts to retain them.
 * If no churn likelihood data is available, use loyalty tier and total spend as fallback indicators.
 * Keep the response concise.
+
+Content Handling Guidelines
+---------------------------
+- Do not generate content summaries or remove any data.
+- Return only the "answer" and "discount_percentage" columns.
